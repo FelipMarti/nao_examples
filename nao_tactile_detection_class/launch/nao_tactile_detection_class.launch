@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Nao Tactile Detection With Class -->
+    <node name="nao_tactile_detection_class" 
+        pkg="nao_tactile_detection_class" 
+        type="nao_tactile_detection_class_node" 
+        output="screen" > 
+        <remap from="tactile_head" to="tactile_touch" />
+    </node>
+
+</launch>
