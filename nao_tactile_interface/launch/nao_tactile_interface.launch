@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Nao Tactile Interface -->
+    <node name="nao_tactile_interface" 
+        pkg="nao_tactile_interface" 
+        type="nao_tactile_interface_node" 
+        output="screen" > 
+        <remap from="tactile_head" to="tactile_touch" />
+    </node>
+
+</launch>
