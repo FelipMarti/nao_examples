@@ -73,41 +73,41 @@ void NaoTactileInterface::head_callback(const naoqi_bridge_msgs::TactileTouch::C
 
     if (msg->button == 1) { // Head Front
         if (msg->state) {   // Pressed
-            headFrontPress[3] = headFrontPress[2];
             headFrontPress[2] = headFrontPress[1];
-            headFrontPress[1] = ros::Time::now();
+            headFrontPress[1] = headFrontPress[0];
+            headFrontPress[0] = ros::Time::now();
             headFrontPublished = false;
         }
         else {              // Released
-            headFrontRelease[3] = headFrontRelease[2];
             headFrontRelease[2] = headFrontRelease[1];
-            headFrontRelease[1] = ros::Time::now();
+            headFrontRelease[1] = headFrontRelease[0];
+            headFrontRelease[0] = ros::Time::now();
         }
     }
     if (msg->button == 2) { // Head Middle
         if (msg->state) {   // Pressed
-            headMiddlePress[3] = headMiddlePress[2];
             headMiddlePress[2] = headMiddlePress[1];
-            headMiddlePress[1] = ros::Time::now();
+            headMiddlePress[1] = headMiddlePress[0];
+            headMiddlePress[0] = ros::Time::now();
             headMiddlePublished = false;
         }
         else {              // Released
-            headMiddleRelease[3] = headMiddleRelease[2];
             headMiddleRelease[2] = headMiddleRelease[1];
-            headMiddleRelease[1] = ros::Time::now();
+            headMiddleRelease[1] = headMiddleRelease[0];
+            headMiddleRelease[0] = ros::Time::now();
         }
     }
     if (msg->button == 3) { // Head Middle
         if (msg->state) {   // Pressed
-            headRearPress[3] = headRearPress[2];
             headRearPress[2] = headRearPress[1];
-            headRearPress[1] = ros::Time::now();
+            headRearPress[1] = headRearPress[0];
+            headRearPress[0] = ros::Time::now();
             headRearPublished = false;
         }
         else {              // Released
-            headRearRelease[3] = headRearRelease[2];
-            headRearRelease[2] = headRearRelease[1]; 
-            headRearRelease[1] = ros::Time::now();
+            headRearRelease[2] = headRearRelease[1];
+            headRearRelease[1] = headRearRelease[0]; 
+            headRearRelease[0] = ros::Time::now();
         }
     }
 
@@ -123,28 +123,28 @@ void NaoTactileInterface::bumper_callback(const naoqi_bridge_msgs::Bumper::Const
 
     if (msg->bumper == 0) { // Right Bumper
         if (msg->state) {   // Pressed
-            bumperRightPress[3] = bumperRightPress[2];
             bumperRightPress[2] = bumperRightPress[1];
-            bumperRightPress[1] = ros::Time::now();
+            bumperRightPress[1] = bumperRightPress[0];
+            bumperRightPress[0] = ros::Time::now();
             bumperRightPublished = false;
         }
         else {              // Released
-            bumperRightRelease[3] = bumperRightRelease[2];
             bumperRightRelease[2] = bumperRightRelease[1];
-            bumperRightRelease[1] = ros::Time::now();
+            bumperRightRelease[1] = bumperRightRelease[0];
+            bumperRightRelease[0] = ros::Time::now();
         }
     }
     if (msg->bumper == 1) { // Left Bumper
         if (msg->state) {   // Pressed
-            bumperLeftPress[3] = bumperLeftPress[2];
             bumperLeftPress[2] = bumperLeftPress[1];
-            bumperLeftPress[1] = ros::Time::now();
+            bumperLeftPress[1] = bumperLeftPress[0];
+            bumperLeftPress[0] = ros::Time::now();
             bumperLeftPublished = false;
         }
         else {              // Released
-            bumperLeftRelease[3] = bumperLeftRelease[2];
             bumperLeftRelease[2] = bumperLeftRelease[1];
-            bumperLeftRelease[1] = ros::Time::now();
+            bumperLeftRelease[1] = bumperLeftRelease[0];
+            bumperLeftRelease[0] = ros::Time::now();
         }
     }
 
@@ -168,29 +168,41 @@ int NaoTactileInterface::check_taps(const ros::Time timesP[3], const ros::Time t
 {
     ros::Time CurrentTime = ros::Time::now();
     int output=0;
-    const double CLICK_TIME = 0.6; // seconds
-
-    if (CurrentTime.toSec() > timesP[1].toSec() + CLICK_TIME and !published) {
-        if (timesP[3].toSec() + CLICK_TIME/2 > timesP[2].toSec() and
-            timesP[2].toSec() + CLICK_TIME/2 > timesP[1].toSec()) {
+    const double CLICK_TIME = 0.6;  // seconds
+    const double MAX_LONG = 5.0;    // seconds, Long press no more than MAX_LONG
+                                    // sometimes release is not detected, safety feature
+    
+    // We had a click CLICK_TIME ago and has not been published
+    if (CurrentTime.toSec() > timesP[0].toSec() + CLICK_TIME and !published) {
+        // We had two more clicks CLICK_TIME/2 and CLICK_TIME/2 ago -> triple Click
+        if (timesP[2].toSec() + CLICK_TIME/2 > timesP[1].toSec() and
+            timesP[1].toSec() + CLICK_TIME/2 > timesP[0].toSec()) {
             ROS_INFO("[nao_tactile_interface] Triple Click");
             published = true;
             output=3;
         }   
-        else if (timesP[2].toSec() + CLICK_TIME/2 > timesP[1].toSec()) {
+        // We had 1 more click ago CLICK_TIME/2 ago -> double click
+        else if (timesP[1].toSec() + CLICK_TIME/2 > timesP[0].toSec()) {
             ROS_INFO("[nao_tactile_interface] Double Click");
             published = true;
             output=2;
         }   
-        else if (timesP[1].toSec() < timesR[1].toSec()) {
+        // Buttom is released in less than CLICK_TIME -> single click
+        else if (timesP[0].toSec() < timesR[0].toSec() and 
+                 timesR[0].toSec() - timesP[0].toSec() < CLICK_TIME ) {
             ROS_INFO("[nao_tactile_interface] Single Click");
             published = true;
             output=1;
         }
-        else {
+        // Still not released, during less than MAX_LONG -> long click
+        else if (timesP[0].toSec() > timesR[0].toSec() and 
+                 timesP[0].toSec() + MAX_LONG > CurrentTime.toSec() ) {
             ROS_INFO("[nao_tactile_interface] Long Click");
-            published = true;
             output=4;
+        }
+        // Long click is released, or longer than MAX_LONG -> stop publishing
+        else {
+            published = true;
         }
     }
 
@@ -203,7 +215,7 @@ int NaoTactileInterface::Main (void)
 {
 
     // Main Loop
-    ros::Rate loop_rate(100);    //100Hz 
+    ros::Rate loop_rate(20);  // Hz 
     while (ros::ok()) {
     
         // Var used to store the message to publish
@@ -214,14 +226,14 @@ int NaoTactileInterface::Main (void)
         var_pub.HeadMiddle = check_taps(headMiddlePress, headMiddleRelease, headMiddlePublished);
         var_pub.HeadRear = check_taps(headRearPress, headRearRelease, headRearPublished);
         var_pub.BumperLeft = check_taps(bumperLeftPress, bumperLeftRelease, bumperLeftPublished);
-        var_pub.BumperRight = check_taps(bumperLeftPress, bumperLeftRelease, bumperLeftPublished);
+        var_pub.BumperRight = check_taps(bumperRightPress, bumperRightRelease, bumperRightPublished);
 
         // Publishing, only if there is something to publish
-        if (var_pub.HeadFront   != 0 or
-            var_pub.HeadMiddle  != 0 or
-            var_pub.HeadRear    != 0 or
-            var_pub.BumperLeft  != 0 or
-            var_pub.BumperRight != 0 ) 
+        if ( var_pub.HeadFront   != 0 or
+             var_pub.HeadMiddle  != 0 or
+             var_pub.HeadRear    != 0 or
+             var_pub.BumperLeft  != 0 or
+             var_pub.BumperRight != 0 ) 
         {
             interfacePub.publish(var_pub);
         }
