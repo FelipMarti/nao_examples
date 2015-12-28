@@ -39,6 +39,8 @@
   <run_depend>nao_tactile_detection</run_depend>
   <run_depend>nao_tactile_detection_class</run_depend>
   <run_depend>nao_tactile_interface</run_depend>
+  <run_depend>nao_blink_brain</run_depend>
+  <run_depend>nao_leds_effects</run_depend>
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
