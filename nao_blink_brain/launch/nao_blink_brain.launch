@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Nao Leds Effects -->
+    <node name="nao_blink_brain" 
+        pkg="nao_blink_brain" 
+        type="nao_blink_brain_node" 
+        output="screen" > 
+        <remap from="leds" to="fade_rgb" />
+    </node>
+
+</launch>
