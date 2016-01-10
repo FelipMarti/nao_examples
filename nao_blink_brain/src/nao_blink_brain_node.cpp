@@ -1,3 +1,10 @@
+/**
+ *      Nao robot ROS publisher to blink brain leds 
+ *
+ *      GNU General Public License v3.0 
+ *      Copyright (c) 2015 Felip Marti Carrillo  
+ */
+
 #include "ros/ros.h"
 #include "naoqi_bridge_msgs/FadeRGB.h"
 
