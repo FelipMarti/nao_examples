@@ -68,7 +68,7 @@ NaoTactileInterface::~NaoTactileInterface (void) {
  *      Tactile Touch Subscriber, head buttons
  *      Detecting when a button is pressed or released
  */
-void NaoTactileInterface::head_callback(const naoqi_bridge_msgs::TactileTouch::ConstPtr& msg)
+void NaoTactileInterface::head_callback(const naoqi_bridge_msgs::HeadTouch::ConstPtr& msg)
 {
 
     if (msg->button == 1) { // Head Front

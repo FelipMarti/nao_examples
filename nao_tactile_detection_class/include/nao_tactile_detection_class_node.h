@@ -13,7 +13,7 @@
 
 #include "ros/ros.h"
 
-#include "naoqi_bridge_msgs/TactileTouch.h"
+#include "naoqi_bridge_msgs/HeadTouch.h"
 #include "naoqi_bridge_msgs/Bumper.h"
 
 
@@ -28,7 +28,7 @@ private:
     // [subscriber attributes]
     ros::Subscriber subHead;
     ros::Subscriber subBumper; 
-    void head_callback(const naoqi_bridge_msgs::TactileTouch::ConstPtr& msg);
+    void head_callback(const naoqi_bridge_msgs::HeadTouch::ConstPtr& msg);
     void bumper_callback(const naoqi_bridge_msgs::Bumper::ConstPtr& msg);
 
 

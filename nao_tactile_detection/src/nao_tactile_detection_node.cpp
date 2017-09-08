@@ -9,11 +9,11 @@
 
 #include "ros/ros.h"
 
-#include "naoqi_bridge_msgs/TactileTouch.h"
+#include "naoqi_bridge_msgs/HeadTouch.h"
 #include "naoqi_bridge_msgs/Bumper.h"
 
 
-void headCallback(const naoqi_bridge_msgs::TactileTouch::ConstPtr& msg)
+void headCallback(const naoqi_bridge_msgs::HeadTouch::ConstPtr& msg)
 {
 
     if (msg->button == 1) {

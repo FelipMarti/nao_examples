@@ -27,7 +27,7 @@ NaoTactileDetectionClass::~NaoTactileDetectionClass (void) {
 
 
 
-void NaoTactileDetectionClass::head_callback(const naoqi_bridge_msgs::TactileTouch::ConstPtr& msg)
+void NaoTactileDetectionClass::head_callback(const naoqi_bridge_msgs::HeadTouch::ConstPtr& msg)
 {
 
     if (msg->button == 1) {
