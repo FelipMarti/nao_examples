@@ -134,6 +134,7 @@ include_directories(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(nao_leds_effects_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(nao_leds_effects_node nao_leds_effects_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(nao_leds_effects_node
